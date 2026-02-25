@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:splitzy/features/auth/presentation/screens/sign_up_screen.dart';
+import 'package:splitzy/core/router/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 const _supabaseUrl = String.fromEnvironment('SUPABASE_URL');
@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const SignUpScreen(),
+      routerConfig: appRouter,
     );
   }
 }
