@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:splitzy/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+const _supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+const _supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: 'https://xzoupptvzbztyfaplnta.supabase.co',
-    anonKey: 'sb_publishable_gd4JwA2eb8COI-hWwkKdFQ_xkIo6lHz',
-  );
+  await Supabase.initialize(url: _supabaseUrl, anonKey: _supabaseAnonKey);
   runApp(const MyApp());
 }
 
