@@ -7,13 +7,11 @@ class AuthBloc extends Cubit<UiStates<User>> {
   AuthBloc({required this.signInWithCredentialsUsecase})
     : super(DefaultState());
 
-  final SignInWithCredentialsUsecase signInWithCredentialsUsecase;
+  final SignUpWithCredentialsUsecase signInWithCredentialsUsecase;
 
-  Future<void> signInWithCredentials(String email, String password) async {
+  Future<void> signInWithCredentials({required SignUpParams params}) async {
     emit(Progress());
-    final result = await signInWithCredentialsUsecase(
-      SignInParams(email: email, password: password),
-    );
+    final result = await signInWithCredentialsUsecase(params);
     result.fold((l) => emit(Error(l.message)), (r) => emit(Success(r)));
   }
 }
