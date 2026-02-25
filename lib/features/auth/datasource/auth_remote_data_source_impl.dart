@@ -20,7 +20,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: params.password,
         data: {'name': params.name},
       );
-      return UserModel.fromjson(result.user!.toJson());
+      return UserModel.fromUser(result.user!);
     } catch (e) {
       throw Exception(e.toString());
     }
