@@ -46,3 +46,4 @@ app.*.map.json
 
 # Local secrets — never commit this!
 secrets.json
+lib/constants/app_constants.dart
