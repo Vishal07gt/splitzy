@@ -5,20 +5,25 @@ import 'package:splitzy/features/auth/domain/entities/user_entity.dart'
     show User;
 import 'package:splitzy/features/auth/domain/repository/auth_repository.dart';
 
-class SignInWithCredentialsUsecase implements UseCase<User, SignInParams> {
+class SignUpWithCredentialsUsecase implements UseCase<User, SignUpParams> {
   final AuthRepository _repository;
 
-  SignInWithCredentialsUsecase(this._repository);
+  SignUpWithCredentialsUsecase(this._repository);
 
   @override
-  Future<Either<Failure, User>> call(SignInParams params) {
-    return _repository.signInWithCredentials(params: params);
+  Future<Either<Failure, User>> call(SignUpParams params) {
+    return _repository.signUpWithCredentials(params: params);
   }
 }
 
-class SignInParams {
+class SignUpParams {
   final String email;
   final String password;
+  final String name;
 
-  const SignInParams({required this.email, required this.password});
+  const SignUpParams({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
 }
