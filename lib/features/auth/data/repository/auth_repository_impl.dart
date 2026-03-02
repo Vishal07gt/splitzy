@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:splitzy/core/error/errors.dart';
-import 'package:splitzy/features/auth/datasource/auth_remote_data_source.dart';
+import 'package:splitzy/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:splitzy/features/auth/domain/entities/user_entity.dart'
     show User;
 import 'package:splitzy/features/auth/domain/repository/auth_repository.dart';

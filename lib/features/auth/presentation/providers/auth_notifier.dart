@@ -3,7 +3,7 @@ import 'package:splitzy/features/auth/domain/entities/user_entity.dart';
 import 'package:splitzy/features/auth/domain/usecases/sign_in_with_credentials_usecase.dart';
 import 'package:splitzy/features/auth/domain/usecases/sign_up_with_credentials_usecase.dart';
 import 'package:splitzy/features/auth/data/repository/auth_repository_impl.dart';
-import 'package:splitzy/features/auth/datasource/auth_remote_data_source_impl.dart';
+import 'package:splitzy/features/auth/data/datasource/auth_remote_data_source_impl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 part 'auth_notifier.g.dart';

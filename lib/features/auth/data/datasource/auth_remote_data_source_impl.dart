@@ -1,10 +1,11 @@
 import 'package:splitzy/features/auth/data/model/user_model.dart'
     show UserModel;
-import 'package:splitzy/features/auth/datasource/auth_remote_data_source.dart';
 import 'package:splitzy/features/auth/domain/usecases/sign_in_with_credentials_usecase.dart'
     show SignInParams;
 import 'package:splitzy/features/auth/domain/usecases/sign_up_with_credentials_usecase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
+
+import 'auth_remote_data_source.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final supa.SupabaseClient supabase;
