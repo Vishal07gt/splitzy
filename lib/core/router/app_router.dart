@@ -1,59 +1,79 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:splitzy/core/router/go_router_refresh_stream.dart';
+import 'package:splitzy/core/ui_states/ui_states.dart';
+import 'package:splitzy/features/auth/domain/entities/user_entity.dart';
+import 'package:splitzy/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:splitzy/features/auth/presentation/pages/sign_in_screen.dart';
 import 'package:splitzy/features/auth/presentation/pages/sign_up_screen.dart';
-import 'package:splitzy/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:splitzy/features/friends/presentation/cubit/friends_cubit.dart';
+import 'package:splitzy/features/friends/presentation/cubit/incoming_requests_cubit.dart';
+import 'package:splitzy/features/friends/presentation/cubit/search_cubit.dart';
+import 'package:splitzy/features/friends/presentation/pages/friends_page.dart';
+import 'package:splitzy/features/friends/presentation/pages/request_page.dart';
+import 'package:splitzy/features/friends/presentation/pages/search_page.dart';
 
-// TODO: import HomeScreen when ready
-// import 'package:splitzy/features/home/presentation/pages/home_screen.dart';
+import '../../core/di/injection_container.dart';
 
-part 'app_router.g.dart';
+GoRouter buildRouter(AuthCubit authCubit) => GoRouter(
+      initialLocation: '/signin',
+      refreshListenable: GoRouterRefreshStream(authCubit.stream),
+      redirect: (context, routerState) {
+        final s = authCubit.state;
+        final isLoggedIn = s is Success<User?> && s.data != null;
+        final isLoading = s is Progress<User?>;
+        final isAuthRoute = routerState.matchedLocation == '/signin' ||
+            routerState.matchedLocation == '/signup';
 
-// GoRouter as a Riverpod provider so it can watch auth state
-@riverpod
-GoRouter appRouter(AppRouterRef ref) {
-  // Watch auth state — router refreshes when auth changes
-  final authState = ref.watch(authNotifierProvider);
-
-  return GoRouter(
-    initialLocation: '/signin',
-    // Redirect logic runs on every navigation attempt
-    redirect: (context, routerState) {
-      final isLoggedIn = authState.valueOrNull != null;
-      final isLoading  = authState.isLoading;
-      final isAuthRoute = routerState.matchedLocation == '/signin' ||
-          routerState.matchedLocation == '/signup';
-
-      // Still checking auth — don't redirect yet
-      if (isLoading) return null;
-
-      // Logged in but on auth page → go home
-      if (isLoggedIn && isAuthRoute) return '/home';
-
-      // Not logged in and not on auth page → go to signin
-      if (!isLoggedIn && !isAuthRoute) return '/signin';
-
-      // No redirect needed
-      return null;
-    },
-    routes: [
-      GoRoute(
-        path: '/signin',
-        builder: (context, state) => const SignInScreen(),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) => const SignUpScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        // Replace with HomeScreen() when ready
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Home — coming soon')),
+        if (isLoading) return null;
+        if (isLoggedIn && isAuthRoute) return '/home';
+        if (!isLoggedIn && !isAuthRoute) return '/signin';
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: '/signin',
+          builder: (ctx, state) => const SignInScreen(),
         ),
-      ),
-    ],
-  );
-}
+        GoRoute(
+          path: '/signup',
+          builder: (ctx, state) => const SignUpScreen(),
+        ),
+        GoRoute(
+          path: '/home',
+          builder: (ctx, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => sl<FriendsCubit>()),
+              BlocProvider(create: (_) => sl<IncomingRequestsCubit>()),
+            ],
+            child: const FriendsPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/friends',
+          builder: (ctx, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => sl<FriendsCubit>()),
+              BlocProvider(create: (_) => sl<IncomingRequestsCubit>()),
+            ],
+            child: const FriendsPage(),
+          ),
+          routes: [
+            GoRoute(
+              path: 'search',
+              builder: (ctx, state) => BlocProvider(
+                create: (_) => sl<SearchCubit>(),
+                child: const SearchPage(),
+              ),
+            ),
+            GoRoute(
+              path: 'requests',
+              builder: (ctx, state) => BlocProvider(
+                create: (_) => sl<IncomingRequestsCubit>(),
+                child: const RequestsPage(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );

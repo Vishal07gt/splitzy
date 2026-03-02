@@ -15,8 +15,8 @@ dependencies:
   cached_network_image: ^3.4.1        # avatar / profile images
 
   # ── STATE MANAGEMENT ────────────────────────────────────────
-  flutter_riverpod: ^2.6.1            # core riverpod for flutter
-  riverpod_annotation: ^2.6.1         # @riverpod annotation
+  flutter_bloc: ^9.1.0                # cubit + bloc
+  get_it: ^8.0.3                      # service locator DI
 
   # ── NAVIGATION ──────────────────────────────────────────────
   go_router: ^17.1.0                  # routing + auth guard
@@ -38,12 +38,8 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   mocktail: ^1.0.4                # mocking for unit tests
+  bloc_test: ^10.0.0              # cubit/bloc testing helpers
 
-  # ── CODE GENERATION ─────────────────────────────────────────
-  riverpod_generator: ^2.6.1          # generates providers from @riverpod
-  build_runner: ^2.4.13               # runs code generation
-  custom_lint: ^0.7.5                 # riverpod lint rules
-  riverpod_lint: ^2.6.1               # catches riverpod mistakes early
 
 flutter:
   uses-material-design: true

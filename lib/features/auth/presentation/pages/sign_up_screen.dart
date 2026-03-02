@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:splitzy/core/ui_states/ui_states.dart';
 import 'package:splitzy/core/utils/form_validators.dart';
 import 'package:splitzy/core/widgets/app_text_form_field.dart';
+import 'package:splitzy/features/auth/domain/entities/user_entity.dart';
 import 'package:splitzy/features/auth/domain/usecases/sign_up_with_credentials_usecase.dart';
-import 'package:splitzy/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:splitzy/features/auth/presentation/cubit/auth_cubit.dart';
 
-class SignUpScreen extends ConsumerStatefulWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends ConsumerState<SignUpScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -30,100 +32,99 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ref.read(authNotifierProvider.notifier).signUpWithCredentials(
-        params: SignUpParams(
-          name: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        ),
-      );
+      context.read<AuthCubit>().signUp(SignUpParams(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(authNotifierProvider, (previous, next) {
-      next.whenOrNull(
-        error: (error, _) {
+    return BlocListener<AuthCubit, UiStates<User?>>(
+      listener: (context, state) {
+        if (state is Error<User?>) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
+            SnackBar(content: Text(state.message)),
           );
-        },
-      );
-      // GoRouter redirect handles navigation to /home automatically
-    });
-
-    final authState = ref.watch(authNotifierProvider);
-    final isLoading = authState.isLoading;
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Create Account',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  AppTextFormField(
-                    controller: _nameController,
-                    label: 'Name',
-                    icon: Icons.person,
-                    validator: (v) => FormValidators.required(v, 'Name'),
-                  ),
-                  const SizedBox(height: 20),
-                  AppTextFormField(
-                    controller: _emailController,
-                    label: 'Email',
-                    icon: Icons.email,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: FormValidators.email,
-                  ),
-                  const SizedBox(height: 20),
-                  AppTextFormField(
-                    controller: _passwordController,
-                    label: 'Password',
-                    icon: Icons.lock,
-                    obscureText: _obscurePassword,
-                    validator: FormValidators.password,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
+        }
+        // GoRouter redirect handles navigation to /home automatically
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Create Account',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    AppTextFormField(
+                      controller: _nameController,
+                      label: 'Name',
+                      icon: Icons.person,
+                      validator: (v) => FormValidators.required(v, 'Name'),
+                    ),
+                    const SizedBox(height: 20),
+                    AppTextFormField(
+                      controller: _emailController,
+                      label: 'Email',
+                      icon: Icons.email,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: FormValidators.email,
+                    ),
+                    const SizedBox(height: 20),
+                    AppTextFormField(
+                      controller: _passwordController,
+                      label: 'Password',
+                      icon: Icons.lock,
+                      obscureText: _obscurePassword,
+                      validator: FormValidators.password,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  FilledButton(
-                    onPressed: isLoading ? null : _submit,
-                    child: isLoading
-                        ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                        : const Text('Sign Up'),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => context.go('/signin'),
-                    child: const Text('Already have an account? Sign In'),
-                  ),
-                ],
+                    const SizedBox(height: 32),
+                    BlocBuilder<AuthCubit, UiStates<User?>>(
+                      builder: (context, state) {
+                        final isLoading = state is Progress<User?>;
+                        return FilledButton(
+                          onPressed: isLoading ? null : _submit,
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text('Sign Up'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => context.go('/signin'),
+                      child: const Text('Already have an account? Sign In'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
