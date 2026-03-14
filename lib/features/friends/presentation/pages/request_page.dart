@@ -20,7 +20,7 @@ class RequestsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is Error<List<FriendRequestEntity>>) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(child: SelectableText('Error: ${state.message}'));
           }
           if (state is Success<List<FriendRequestEntity>>) {
             final requests = state.data;

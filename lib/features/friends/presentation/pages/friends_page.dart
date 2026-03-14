@@ -58,7 +58,7 @@ class FriendsPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${state.message}'),
+                  SelectableText('Error: ${state.message}'),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () =>

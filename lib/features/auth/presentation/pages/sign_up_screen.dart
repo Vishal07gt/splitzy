@@ -46,7 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       listener: (context, state) {
         if (state is Error<User?>) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(content: SelectableText(state.message)),
           );
         }
         // GoRouter redirect handles navigation to /home automatically

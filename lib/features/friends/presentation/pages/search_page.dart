@@ -45,7 +45,7 @@ class _SearchPageState extends State<SearchPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is Error<List<User>>) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(child: SelectableText('Error: ${state.message}'));
           }
           if (state is Success<List<User>>) {
             final users = state.data;

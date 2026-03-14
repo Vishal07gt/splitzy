@@ -43,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
       listener: (context, state) {
         if (state is Error<User?>) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(content: SelectableText(state.message)),
           );
         }
         // Navigation handled by GoRouter redirect
